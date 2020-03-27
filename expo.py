@@ -46,15 +46,12 @@ token = response.json().get('access_token', None)
 if not token:
     print('Unable to authorize with provided credentials')
     exit(1)
-print(token)
 
 # 3. Call API (https://stepik.org/api/docs/) using this token.
 def fetch_object(obj_class, obj_id):
     api_url = '{}/api/{}s/{}'.format(api_host, obj_class, obj_id)
     response = requests.get(api_url,
                             headers={'Authorization': 'Bearer ' + token}).json()
-    print(response)
-    print()
     return response['{}s'.format(obj_class)][0]
 
 
@@ -83,7 +80,6 @@ def intro(course):
     video_url = None
     if course['intro_video']:
         video_url = course['intro_video']['urls'][0]['url']
-    print(summary, target_audience, requirements, description, video_url)
     text = "Summary\n{}\nAudience\n{}\nRequirements\n{}\nDescription\n{}\n".format(summary, target_audience,
                                                                                    requirements, description)
     return text, video_url
@@ -96,13 +92,11 @@ def main():
 
     list_of_lessons = []
     for section in sections:
-        print(section)
 
         unit_ids = section['units']
         units = fetch_objects('unit', unit_ids)
 
         for unit in units:
-            print(unit)
             lesson_id = unit['lesson']
             lesson = fetch_object('lesson', lesson_id)
 
@@ -110,7 +104,6 @@ def main():
             steps = fetch_objects('step', step_ids)
 
             for step in steps:
-                print('STEP ', step)
                 ###
                 video_link = None
                 if step['block']['video']:
@@ -169,6 +162,7 @@ def main():
                             filename = os.path.join(os.curdir, *path)
                             with open(filename, 'w') as f:
                                 f.write(data)
+                            print(filename)
                         except:
                             pass
 
@@ -183,13 +177,14 @@ def main():
                 soup = BeautifulSoup(html, 'html.parser')
                 tags = soup.find_all(['img'])
                 for index, tag in enumerate(tags):
-                    path[-1] = '{}_photo_{}_{}.png'.format(str(step['position']).zfill(2), index,  step['block']['name'])
+                    path[-1] = '{}_{}_{}_photo.png'.format(step['id'], step['block']['name'], index)
                     filename = os.path.join(os.curdir, *path)
                     try:
                         p = requests.get(tag['src'])
                         out = open(filename, "wb")
                         out.write(p.content)
                         out.close()
+                        print(filename)
                     except:
                         pass
 
