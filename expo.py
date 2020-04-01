@@ -114,7 +114,7 @@ def main():
                     '{} {}'.format(str(course['id']).zfill(2), course['title']),
                     '{} {}'.format(str(section['position']).zfill(2), section['title']),
                     '{} {}'.format(str(unit['position']).zfill(2), lesson['title']),
-                    '{}_{}.step'.format(str(step['position']).zfill(2), step['block']['name'])
+                    '{}_{}.step'.format(str(step['id']), step['block']['name'])
                 ]
                 try:
                     os.makedirs(os.path.join(os.curdir, *path[:-1]))
