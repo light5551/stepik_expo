@@ -15,6 +15,7 @@ from bs4 import BeautifulSoup
 
 api_host = 'https://stepik.org'
 
+
 def parse_arguments():
     parser = argparse.ArgumentParser(
         description='Stepik downloader')
@@ -35,6 +36,7 @@ def parse_arguments():
 
     return args
 
+
 args = parse_arguments()
 
 # 2. Get a token
@@ -46,6 +48,7 @@ token = response.json().get('access_token', None)
 if not token:
     print('Unable to authorize with provided credentials')
     exit(1)
+
 
 # 3. Call API (https://stepik.org/api/docs/) using this token.
 def fetch_object(obj_class, obj_id):
@@ -92,6 +95,7 @@ def main():
     was_intro = False
 
     list_of_lessons = []
+    lessons_stack = []
     for section in sections:
 
         unit_ids = section['units']
@@ -131,6 +135,21 @@ def main():
                 print(filename)
                 f.write(json.dumps(data))
                 f.close()
+
+                # lesson logo
+                if lesson_id not in lessons_stack:
+                    lessons_stack.append(lesson_id)
+                    try:
+                        r = requests.get('https://stepik.org/api/lessons?ids[]={}'.format(lesson_id)).json()['lessons'][0]
+                        logo_id, cover_url = r['id'], r['cover_url']
+                        path[-1] = '{}_logo.png'.format(logo_id)
+                        filename = os.path.join(os.curdir, *path)
+                        p = requests.get(cover_url)
+                        with open(filename, "wb") as out:
+                            out.write(p.content)
+                    except:
+                        pass
+                ##
                 # intro
                 if not was_intro:
                     text, video, main_picture = intro(course)
