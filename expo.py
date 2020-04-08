@@ -74,6 +74,7 @@ def fetch_objects(obj_class, obj_ids):
 
 def intro(course):
     summary = course['summary']
+    main_picture = course['cover']
     target_audience = course['target_audience']
     requirements = course['requirements']
     description = course['description']
@@ -82,7 +83,7 @@ def intro(course):
         video_url = course['intro_video']['urls'][0]['url']
     text = "Summary\n{}\nAudience\n{}\nRequirements\n{}\nDescription\n{}\n".format(summary, target_audience,
                                                                                    requirements, description)
-    return text, video_url
+    return text, video_url, main_picture
 
 
 def main():
@@ -132,7 +133,7 @@ def main():
                 f.close()
                 # intro
                 if not was_intro:
-                    text, video = intro(course)
+                    text, video, main_picture = intro(course)
                     try:
                         os.makedirs(os.path.join(os.curdir, path[0], 'intro'))
                     except:
@@ -144,6 +145,11 @@ def main():
                     out = open(intro_file, "w")
                     out.write(text)
                     out.close()
+                    if main_picture:
+                        r = requests.get("https://stepik.org" + main_picture)
+                        main_picture_file = os.path.join(os.curdir, path[0], 'intro', 'logo.png')
+                        with open(main_picture_file, 'wb') as file:
+                            file.write(r.content)
                 was_intro = True
 
                 # files
