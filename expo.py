@@ -17,8 +17,7 @@ api_host = 'https://stepik.org'
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(
-        description='Stepik downloader')
+    parser = argparse.ArgumentParser(description='Stepik downloader')
 
     parser.add_argument('-c', '--client_id',
                         help='your client_id from https://stepik.org/oauth2/applications/',
@@ -29,8 +28,15 @@ def parse_arguments():
                         required=True)
 
     parser.add_argument('-i', '--course_id',
-                        help='course id',
-                        required=True)
+                        help='course id')
+
+    parser.add_argument('-v', '--ignore_video',
+                        action="store_true",
+                        help='dont download videos')
+
+    parser.add_argument('-f', '--file',
+                        action="store_true",
+                        default=False)
 
     args = parser.parse_args()
 
@@ -82,18 +88,18 @@ def intro(course):
     requirements = course['requirements']
     description = course['description']
     video_url = None
-    if course['intro_video']:
+    if not args.ignore_video and course['intro_video']:
         video_url = course['intro_video']['urls'][0]['url']
     text = "Summary\n{}\nAudience\n{}\nRequirements\n{}\nDescription\n{}\n".format(summary, target_audience,
                                                                                    requirements, description)
     return text, video_url, main_picture
 
 
-def main():
-    course = fetch_object('course', args.course_id)
+def main(course_id):
+    course = fetch_object('course', course_id)
     sections = fetch_objects('section', course['sections'])
     was_intro = False
-
+    need_video = not args.ignore_video
     list_of_lessons = []
     lessons_stack = []
     for section in sections:
@@ -111,7 +117,7 @@ def main():
             for step in steps:
                 ###
                 video_link = None
-                if step['block']['video']:
+                if need_video and step['block']['video']:
                     video_link = step['block']['video']['urls'][0]['url']
                 ###
                 step_source = fetch_object('step-source', step['id'])
@@ -215,4 +221,12 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    filename = './ids.txt'
+    course_ids = []
+    if args.file and os.path.exists(filename):
+        with open(filename, 'r') as file:
+            course_ids = [int(i) for i in file.read().split('\n')]
+    else:
+        course_ids = [int(args.course_id)]
+    for id in course_ids:
+        main(id)
