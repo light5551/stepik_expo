@@ -13,3 +13,9 @@ python3 expo.py -i <course_id> -c <client_id> -s <client_secret>
 
 1. Зарегистрировать приложение на stepik [здесь](https://stepik.org/oauth2/applications/)
 2. В поле `Client type` указать `confidential`, а в поле `Authorization grant type` указать `client-credentials` 
+
+## Флаги
+
+1. `-f` - чтение из файла айди курсов(пример `ids.txt`); нужно убрать флаг `-i`
+2. `-v` - отключение видео
+
