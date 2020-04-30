@@ -226,7 +226,6 @@ if __name__ == '__main__':
     if args.file and os.path.exists(filename):
         with open(filename, 'r') as file:
             course_ids = [int(i) for i in file.read().split('\n') if len(i)]
-            print(course_ids)
     else:
         course_ids = [int(args.course_id)]
     for id in course_ids:
