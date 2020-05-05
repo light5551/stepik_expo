@@ -3,6 +3,7 @@
 import argparse
 import os
 import json
+import sys
 import urllib
 import requests
 import datetime
@@ -56,12 +57,20 @@ if not token:
     exit(1)
 
 
+def check_rights(response):
+    if 'detail' in response:
+        print('FULL RESPONSE - {}'.format(response))
+        print(response['detail'])
+        sys.exit(1)
+    return response
+
 # 3. Call API (https://stepik.org/api/docs/) using this token.
 def fetch_object(obj_class, obj_id):
     api_url = '{}/api/{}s/{}'.format(api_host, obj_class, obj_id)
     response = requests.get(api_url,
                             headers={'Authorization': 'Bearer ' + token}).json()
-    return response['{}s'.format(obj_class)][0]
+
+    return check_rights(response)['{}s'.format(obj_class)][0]
 
 
 def fetch_objects(obj_class, obj_ids):
@@ -74,9 +83,9 @@ def fetch_objects(obj_class, obj_ids):
         api_url = '{}/api/{}s?{}'.format(api_host, obj_class,
                                          '&'.join('ids[]={}'.format(obj_id)
                                                   for obj_id in obj_ids_slice))
-        response = requests.get(api_url,
+        response = check_rights(requests.get(api_url,
                                 headers={'Authorization': 'Bearer ' + token}
-                                ).json()
+                                ).json())
         objs += response['{}s'.format(obj_class)]
     return objs
 
@@ -146,7 +155,7 @@ def main(course_id):
                 if lesson_id not in lessons_stack:
                     lessons_stack.append(lesson_id)
                     try:
-                        r = requests.get('https://stepik.org/api/lessons?ids[]={}'.format(lesson_id)).json()['lessons'][0]
+                        r = check_rights(requests.get('https://stepik.org/api/lessons?ids[]={}'.format(lesson_id)).json())['lessons'][0]
                         logo_id, cover_url = r['id'], r['cover_url']
                         path[-1] = '{}_logo.png'.format(logo_id)
                         filename = os.path.join(os.curdir, *path)
