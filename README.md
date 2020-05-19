@@ -18,4 +18,5 @@ python3 expo.py -i <course_id> -c <client_id> -s <client_secret>
 
 1. `-f` - чтение из файла айди курсов(пример `ids.txt`); нужно убрать флаг `-i`
 2. `-v` - отключение видео
+3. `-m` - кастомный формат степов: `<lesson>_<step>_<type>` вместо `<id>_<type>`
 
