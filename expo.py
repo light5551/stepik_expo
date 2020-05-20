@@ -39,12 +39,17 @@ def parse_arguments():
                         action="store_true",
                         default=False)
 
+    parser.add_argument('-m', '--mformat',
+                        action="store_true",
+                        default=False)
+
     args = parser.parse_args()
 
     return args
 
 
 args = parse_arguments()
+
 
 # 2. Get a token
 auth = requests.auth.HTTPBasicAuth(args.client_id, args.client_secret)
@@ -130,11 +135,14 @@ def main(course_id):
                     video_link = step['block']['video']['urls'][0]['url']
                 ###
                 step_source = fetch_object('step-source', step['id'])
+                last_string = '{}_{}.step'.format(str(step['id']), step['block']['name'])
+                if args.mformat:
+                    last_string = '{}_{}_{}.step'.format(step['lesson'], str(step['position']), step['block']['name'])
                 path = [
                     '{} {}'.format(str(course['id']).zfill(2), course['title']),
                     '{} {}'.format(str(section['position']).zfill(2), section['title']),
                     '{} {}'.format(str(unit['position']).zfill(2), lesson['title']),
-                    '{}_{}.step'.format(str(step['id']), step['block']['name'])
+                    last_string
                 ]
                 try:
                     os.makedirs(os.path.join(os.curdir, *path[:-1]))
