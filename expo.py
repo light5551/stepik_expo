@@ -137,13 +137,14 @@ def main(course_id):
                 step_source = fetch_object('step-source', step['id'])
                 last_string = '{}_{}.step'.format(str(step['id']), step['block']['name'])
                 if args.mformat:
-                    last_string = '{}_{}_{}.step'.format(step['lesson'], str(step['position']), step['block']['name'])
+                    last_string = '{}_{}_{}.step'.format(step['lesson'], str(step['position']), step['block']['name']).replace('/', '\\')
                 path = [
-                    '{} {}'.format(str(course['id']).zfill(2), course['title']),
-                    '{} {}'.format(str(section['position']).zfill(2), section['title']),
-                    '{} {}'.format(str(unit['position']).zfill(2), lesson['title']),
+                    '{} {}'.format(str(course['id']).zfill(2), course['title']).replace('/', '\\'),
+                    '{} {}'.format(str(section['position']).zfill(2), section['title']).replace('/', '\\'),
+                    '{} {}'.format(str(unit['position']).zfill(2), lesson['title']).replace('/', '\\'),
                     last_string
                 ]
+
                 try:
                     os.makedirs(os.path.join(os.curdir, *path[:-1]))
                 except:
