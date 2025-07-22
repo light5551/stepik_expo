@@ -189,7 +189,7 @@ def main(course_id):
                     out.write(text)
                     out.close()
                     if main_picture:
-                        r = requests.get("https://stepik.org" + main_picture)
+                        r = requests.get(main_picture)
                         main_picture_file = os.path.join(os.curdir, path[0], 'intro', 'logo.png')
                         with open(main_picture_file, 'wb') as file:
                             file.write(r.content)
