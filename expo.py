@@ -157,7 +157,7 @@ def main(course_id):
                     'time': datetime.datetime.now().isoformat()
                 }
                 print(filename)
-                f.write(json.dumps(data))
+                f.write(json.dumps(data).encode().decode('unicode-escape'))
                 f.close()
 
                 # lesson logo
@@ -186,10 +186,10 @@ def main(course_id):
                         urllib.request.urlretrieve(video, intro_video_filename)
                     intro_file = os.path.join(os.curdir, path[0], 'intro', 'intro_text.txt')
                     out = open(intro_file, "w")
-                    out.write(text)
+                    out.write(text.encode().decode('unicode-escape'))
                     out.close()
                     if main_picture:
-                        r = requests.get("https://stepik.org" + main_picture)
+                        r = requests.get(main_picture)
                         main_picture_file = os.path.join(os.curdir, path[0], 'intro', 'logo.png')
                         with open(main_picture_file, 'wb') as file:
                             file.write(r.content)
